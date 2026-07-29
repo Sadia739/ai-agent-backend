@@ -1,0 +1,16 @@
+import ai from "./openai.js";
+
+export const generateAIResponse = async (
+  contents: any[]
+) => {
+  const response = await ai.chat.completions.create({
+    model: "llama-3.3-70b-versatile", // or the Groq model you're using
+    messages: contents,
+    temperature: 0.7,
+  });
+
+  return (
+    response.choices[0]?.message?.content ??
+    "No response generated."
+  );
+};
