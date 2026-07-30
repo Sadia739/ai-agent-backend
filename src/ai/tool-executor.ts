@@ -18,6 +18,11 @@ export const executeTool = async (
         args.city
       );
 
+     case "webSearch":
+    return await toolFunctions.webSearch(
+      args.query
+    );
+
     default:
       throw new Error(
         `Unknown tool: ${name}`
