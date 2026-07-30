@@ -19,6 +19,8 @@ export const generateWithTools = async (
   reply: string;
   executedTools: ExecutedTool[];
 }> => {
+  console.log("========== FIRST AI CALL ==========");
+
   // First AI call
   const response = await client.chat.completions.create({
     model: "llama-3.3-70b-versatile",
@@ -28,21 +30,27 @@ export const generateWithTools = async (
   });
 
   console.log(
-  JSON.stringify(response, null, 2)
-);
-
-console.log(
-  "Tool Calls:",
-  response.choices[0].message.tool_calls
-);
+    "Full First Response:\n",
+    JSON.stringify(response, null, 2)
+  );
 
   const assistant = response.choices[0].message;
 
-  // No tool was called
+  console.log("Assistant Message:");
+  console.log(JSON.stringify(assistant, null, 2));
+
+  console.log("Tool Calls:");
+  console.log(
+    JSON.stringify(assistant.tool_calls, null, 2)
+  );
+
+  // No tool requested
   if (
     !assistant.tool_calls ||
     assistant.tool_calls.length === 0
   ) {
+    console.log("No tool calls requested.");
+
     return {
       reply:
         assistant.content ??
@@ -56,45 +64,81 @@ console.log(
 
   const executedTools: ExecutedTool[] = [];
 
-  // Execute every requested tool
+  // Execute requested tools
   for (const toolCall of assistant.tool_calls) {
     if (toolCall.type !== "function") {
       continue;
     }
-    
-  console.log(toolCall.function.arguments);
 
-    const args = JSON.parse(
+    console.log("--------------------------------");
+    console.log(
+      "Executing Tool:",
+      toolCall.function.name
+    );
+    console.log(
+      "Arguments String:",
       toolCall.function.arguments
     );
+
+    let args: Record<string, any>;
+
+    try {
+      args = JSON.parse(
+        toolCall.function.arguments
+      );
+    } catch (error) {
+      console.error(
+        "Failed to parse tool arguments:"
+      );
+      console.error(error);
+      throw error;
+    }
+
+    console.log("Parsed Arguments:");
+    console.log(args);
 
     const result = await executeTool(
       toolCall.function.name,
       args
     );
 
-    // Store tool execution in memory
+    console.log("Tool Result:");
+    console.log(result);
+
     executedTools.push({
       toolName: toolCall.function.name,
       toolInput: JSON.stringify(args),
       toolOutput: JSON.stringify(result),
     });
 
-    const toolMessage: ChatCompletionToolMessageParam = {
-      role: "tool",
-      tool_call_id: toolCall.id,
-      content: JSON.stringify(result),
-    };
+    const toolMessage: ChatCompletionToolMessageParam =
+      {
+        role: "tool",
+        tool_call_id: toolCall.id,
+        content: JSON.stringify(result),
+      };
 
     messages.push(toolMessage);
   }
 
-  // Second AI call
+  console.log("========== SECOND AI CALL ==========");
+
+  console.log(
+    "Messages Sent To Second Call:\n",
+    JSON.stringify(messages, null, 2)
+  );
+
   const finalResponse =
     await client.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       messages,
+      tools: toolDeclarations,
     });
+
+  console.log(
+    "Final Response:\n",
+    JSON.stringify(finalResponse, null, 2)
+  );
 
   return {
     reply:
