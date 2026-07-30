@@ -27,6 +27,12 @@ export const generateWithTools = async (
     tool_choice: "auto",
   });
 
+  console.log("========== MESSAGES ==========");
+console.dir(messages, { depth: null });
+
+console.log("========== TOOLS ==========");
+console.dir(toolDeclarations, { depth: null });
+
   const assistant = response.choices[0].message;
 
   // No tool was called
