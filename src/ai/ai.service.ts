@@ -62,7 +62,7 @@ export const chatWithAI = async (
       content: SYSTEM_PROMPT,
     },
 
-    ...dbMessages.map((message) => ({
+    ...dbMessages.map((message : any) => ({
       role:
         message.role === "user"
           ? "user"

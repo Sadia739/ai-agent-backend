@@ -14,6 +14,6 @@ export const retrieveDocumentContext = async (
   });
 
   return chunks
-    .map((chunk) => chunk.content)
+    .map((chunk : any) => chunk.content)
     .join("\n\n");
 };

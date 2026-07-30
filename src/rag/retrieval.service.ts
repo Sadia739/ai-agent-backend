@@ -46,9 +46,9 @@ function extractKeywords(question: string): string[] {
         .toLowerCase()
         .replace(/[^\w\s]/g, " ")
         .split(/\s+/)
-        .map((word) => word.trim())
+        .map((word: string) => word.trim())
         .filter(
-          (word) =>
+          (word: string) =>
             word.length > 2 &&
             !STOP_WORDS.has(word)
         )
@@ -73,7 +73,7 @@ export const retrieveDocumentContext = async (
   const keywords = extractKeywords(question);
 
   const ranked = chunks
-    .map((chunk) => {
+    .map((chunk: any) => {
       const text =
         chunk.content.toLowerCase();
 
@@ -101,8 +101,10 @@ export const retrieveDocumentContext = async (
         score,
       };
     })
-    .filter((chunk) => chunk.score > 0)
-    .sort((a, b) => b.score - a.score);
+    .filter((chunk: any) => chunk.score > 0)
+    .sort(
+      (a: any, b: any) => b.score - a.score
+    );
 
   if (ranked.length === 0) {
     return "";
@@ -110,6 +112,6 @@ export const retrieveDocumentContext = async (
 
   return ranked
     .slice(0, 5)
-    .map((chunk) => chunk.content)
+    .map((chunk: any) => chunk.content)
     .join("\n\n");
 };
