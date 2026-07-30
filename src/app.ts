@@ -6,8 +6,11 @@ const app = express();
 
 // Enable CORS
 app.use(
-  cors({
-    origin: "http://localhost:5173",
+    cors({
+    origin: [
+      "http://localhost:5173",
+      "https://ai-agent-frontend-five-psi.vercel.app",
+    ],
     credentials: true,
   })
 );
