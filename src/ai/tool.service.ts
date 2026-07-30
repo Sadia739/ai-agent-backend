@@ -27,11 +27,14 @@ export const generateWithTools = async (
     tool_choice: "auto",
   });
 
-  console.log("========== MESSAGES ==========");
-console.dir(messages, { depth: null });
+  console.log(
+  JSON.stringify(response, null, 2)
+);
 
-console.log("========== TOOLS ==========");
-console.dir(toolDeclarations, { depth: null });
+console.log(
+  "Tool Calls:",
+  response.choices[0].message.tool_calls
+);
 
   const assistant = response.choices[0].message;
 
@@ -58,6 +61,8 @@ console.dir(toolDeclarations, { depth: null });
     if (toolCall.type !== "function") {
       continue;
     }
+    
+  console.log(toolCall.function.arguments);
 
     const args = JSON.parse(
       toolCall.function.arguments
