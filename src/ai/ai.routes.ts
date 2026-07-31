@@ -7,7 +7,7 @@ import {
   chatDocument,
 } from "./ai.controller.js";
 
-import { webSearch } from "../tools/web-search.tool.js";
+// import { webSearch } from "../tools/web-search.tool.js";
 
 const router = Router();
 
@@ -26,29 +26,29 @@ router.post(
 // =====================================
 // Test Tavily Search
 // =====================================
-router.get(
-  "/test-search",
-  async (req, res) => {
-    try {
-      const result = await webSearch(
-        "Today's AI news"
-      );
+// router.get(
+//   "/test-search",
+//   async (req, res) => {
+//     try {
+//       const result = await webSearch(
+//         "Today's AI news"
+//       );
 
-      res.json({
-        success: true,
-        result,
-      });
-    } catch (error: any) {
-      console.error(error);
+//       res.json({
+//         success: true,
+//         result,
+//       });
+//     } catch (error: any) {
+//       console.error(error);
 
-      res.status(500).json({
-        success: false,
-        message:
-          error.response?.data ||
-          error.message,
-      });
-    }
-  }
-);
+//       res.status(500).json({
+//         success: false,
+//         message:
+//           error.response?.data ||
+//           error.message,
+//       });
+//     }
+//   }
+// );
 
 export default router;
