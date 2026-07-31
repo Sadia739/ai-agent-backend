@@ -18,10 +18,10 @@ export const executeTool = async (
         args.city
       );
 
-    //  case "webSearch":
-    // return await toolFunctions.webSearch(
-    //   args.query
-    // );
+     case "webSearch":
+    return await toolFunctions.webSearch(
+      args.query
+    );
 
     default:
       throw new Error(
