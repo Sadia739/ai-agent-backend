@@ -5,8 +5,7 @@ export const toolDeclarations: ChatCompletionTool[] = [
     type: "function",
     function: {
       name: "calculator",
-      description:
-        "Evaluate arithmetic expressions like 2+2, 5*8, (10/2)+3. Use this tool whenever the user asks to calculate something.",
+      description: "Evaluate arithmetic expressions.",
       parameters: {
         type: "object",
         properties: {
@@ -16,6 +15,7 @@ export const toolDeclarations: ChatCompletionTool[] = [
           },
         },
         required: ["expression"],
+        additionalProperties: false,
       },
     },
   },
@@ -28,6 +28,7 @@ export const toolDeclarations: ChatCompletionTool[] = [
       parameters: {
         type: "object",
         properties: {},
+        additionalProperties: false,
       },
     },
   },
@@ -46,26 +47,8 @@ export const toolDeclarations: ChatCompletionTool[] = [
           },
         },
         required: ["city"],
+        additionalProperties: false,
       },
     },
   },
-
-  // {
-  //   type: "function",
-  //   function: {
-  //     name: "webSearch",
-  //     description:
-  //       "Search the internet for current information, latest news, facts, recent events, or anything requiring up-to-date information.",
-  //     parameters: {
-  //       type: "object",
-  //       properties: {
-  //         query: {
-  //           type: "string",
-  //           description: "Search query",
-  //         },
-  //       },
-  //       required: ["query"],
-  //     },
-  //   },
-  // },
 ];

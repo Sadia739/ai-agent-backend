@@ -21,7 +21,7 @@ export const generateWithTools = async (
 }> => {
   // First AI call
   const response = await client.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model: "moonshotai/kimi-k2-instruct",
     messages,
     tools: toolDeclarations,
     tool_choice: "auto",
@@ -80,7 +80,7 @@ export const generateWithTools = async (
   // Second AI call
   const finalResponse =
     await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "moonshotai/kimi-k2-instruct",
       messages,
     });
 
