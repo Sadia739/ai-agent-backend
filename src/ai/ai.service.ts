@@ -62,7 +62,7 @@ export const chatWithAI = async (
       content: SYSTEM_PROMPT,
     },
 
-    ...dbMessages.map((message : any) => ({
+    ...dbMessages.map((message: any) => ({
       role:
         message.role === "user"
           ? "user"
@@ -70,6 +70,15 @@ export const chatWithAI = async (
       content: message.content,
     })),
   ] as ChatCompletionMessageParam[];
+
+  // ==========================
+  // DEBUG
+  // ==========================
+  console.log("========== MESSAGES ==========");
+  console.log(
+    JSON.stringify(messages, null, 2)
+  );
+  console.log("==============================");
 
   // Generate AI response + tool executions
   const result =
@@ -135,7 +144,6 @@ export const chatWithDocument = async (
   const response =
     await client.chat.completions.create({
       model: "llama-3.3-70b-versatile",
-
       messages: [
         {
           role: "system",

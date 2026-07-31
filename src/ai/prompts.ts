@@ -11,7 +11,7 @@ Available tools:
 - getWeather → current weather, temperature, humidity, forecast.
 - getCurrentTime → current date and time.
 - calculator → arithmetic calculations.
-// - webSearch → search the internet for current events, latest news, recent information, and facts.
+
 
 Rules:
 - Never guess weather information.
