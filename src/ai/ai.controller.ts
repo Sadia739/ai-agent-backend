@@ -22,13 +22,35 @@ export const chat = async (
         reply,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("========== AI CHAT ERROR ==========");
+    console.error(error);
+
+    if (error?.response) {
+      console.error("Response Status:", error.response.status);
+      console.error(
+        "Response Data:",
+        JSON.stringify(error.response.data, null, 2)
+      );
+    }
+
+    if (error?.error) {
+      console.error(
+        "Groq Error:",
+        JSON.stringify(error.error, null, 2)
+      );
+    }
+
+    if (error?.cause) {
+      console.error("Cause:", error.cause);
+    }
+
+    console.error("===================================");
+
     res.status(400).json({
       success: false,
       message:
-        error instanceof Error
-          ? error.message
-          : "Something went wrong",
+        error?.message ?? "Something went wrong",
     });
   }
 };
@@ -49,13 +71,13 @@ export const chatDocument = async (
         reply,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.error(error);
+
     res.status(400).json({
       success: false,
       message:
-        error instanceof Error
-          ? error.message
-          : "Something went wrong",
+        error?.message ?? "Something went wrong",
     });
   }
 };
