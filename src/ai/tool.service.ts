@@ -5,6 +5,11 @@ import {
   getLastUserMessage,
   shouldUseWebSearch,
 } from "./web-search-detection.js";
+import {
+  formatWebSearchForLLM,
+  formatWebSearchForStorage,
+} from "../tools/format-web-search.js";
+import type { WebSearchResult } from "../tools/web-search.tool.js";
 
 import type {
   ChatCompletionMessageParam,
@@ -28,6 +33,26 @@ const serializeToolResult = (result: unknown): string => {
     return result;
   }
   return JSON.stringify(result);
+};
+
+const formatToolResultForLLM = (
+  toolName: string,
+  result: unknown
+): string => {
+  if (toolName === "webSearch") {
+    return formatWebSearchForLLM(result as WebSearchResult);
+  }
+  return serializeToolResult(result);
+};
+
+const formatToolResultForStorage = (
+  toolName: string,
+  result: unknown
+): string => {
+  if (toolName === "webSearch") {
+    return formatWebSearchForStorage(result as WebSearchResult);
+  }
+  return serializeToolResult(result);
 };
 
 export const generateWithTools = async (

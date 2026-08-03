@@ -44,9 +44,9 @@ export const webSearch = async (
 
     const formattedResults = results.map(
       (r: { title?: string; url?: string; content?: string }) => ({
-        title: r.title ?? "",
-        url: r.url ?? "",
-        content: r.content ?? "",
+        title: (r.title ?? "").trim(),
+        url: (r.url ?? "").trim(),
+        content: (r.content ?? "").trim(),
       })
     );
 
