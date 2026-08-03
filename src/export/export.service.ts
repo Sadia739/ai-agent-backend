@@ -44,15 +44,17 @@ export const exportConversationPDF = async (
     // ==========================================
 
     doc
+      .font("Helvetica-Bold")
       .fontSize(24)
       .fillColor("#1E3A8A")
       .text("AI Agent - Chat Export", {
         align: "center",
       });
 
-    doc.moveDown();
+    doc.moveDown(1.5);
 
     doc
+      .font("Helvetica")
       .fontSize(13)
       .fillColor("black")
       .text(`Conversation: ${conversation.title}`);
@@ -70,6 +72,7 @@ export const exportConversationPDF = async (
     doc
       .moveTo(50, doc.y)
       .lineTo(545, doc.y)
+      .lineWidth(1)
       .strokeColor("#999999")
       .stroke();
 
@@ -83,36 +86,38 @@ export const exportConversationPDF = async (
       const isUser =
         message.role.toLowerCase() === "user";
 
-      // Separator
+      // Divider
       doc
         .moveTo(50, doc.y)
         .lineTo(545, doc.y)
+        .lineWidth(0.5)
         .strokeColor("#DDDDDD")
         .stroke();
 
       doc.moveDown();
 
-      // Role
+      // Role Heading
       doc
+        .font("Helvetica-Bold")
         .fontSize(14)
         .fillColor(
           isUser ? "#2563EB" : "#16A34A"
         )
-        .font("Helvetica-Bold")
         .text(
           isUser
-            ? "👤 User"
-            : "🤖 AI Assistant"
+            ? "USER"
+            : "AI ASSISTANT"
         );
 
-      doc.moveDown(0.4);
+      doc.moveDown(0.5);
 
-      // Message
+      // Message Content
       doc
         .font("Helvetica")
         .fontSize(12)
         .fillColor("black")
         .text(message.content, {
+          width: 495,
           align: "left",
           lineGap: 4,
         });
@@ -124,17 +129,17 @@ export const exportConversationPDF = async (
     // Footer
     // ==========================================
 
-    doc.moveDown();
-
     doc
       .moveTo(50, doc.y)
       .lineTo(545, doc.y)
+      .lineWidth(1)
       .strokeColor("#999999")
       .stroke();
 
     doc.moveDown();
 
     doc
+      .font("Helvetica-Oblique")
       .fontSize(11)
       .fillColor("gray")
       .text("End of Conversation", {
