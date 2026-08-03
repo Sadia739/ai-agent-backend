@@ -25,6 +25,7 @@ export const exportConversationPDF = async (
 
   const doc = new PDFDocument({
     margin: 50,
+    size: "A4",
   });
 
   const buffers: Buffer[] = [];
@@ -38,23 +39,107 @@ export const exportConversationPDF = async (
 
     doc.on("error", reject);
 
-    doc.fontSize(20).text(conversation.title);
+    // ==========================================
+    // Header
+    // ==========================================
+
+    doc
+      .fontSize(24)
+      .fillColor("#1E3A8A")
+      .text("AI Agent - Chat Export", {
+        align: "center",
+      });
 
     doc.moveDown();
 
+    doc
+      .fontSize(13)
+      .fillColor("black")
+      .text(`Conversation: ${conversation.title}`);
+
+    doc.text(
+      `Exported On: ${new Date().toLocaleString()}`
+    );
+
+    doc.text(
+      `Messages: ${conversation.messages.length}`
+    );
+
+    doc.moveDown();
+
+    doc
+      .moveTo(50, doc.y)
+      .lineTo(545, doc.y)
+      .strokeColor("#999999")
+      .stroke();
+
+    doc.moveDown();
+
+    // ==========================================
+    // Messages
+    // ==========================================
+
     conversation.messages.forEach((message) => {
+      const isUser =
+        message.role.toLowerCase() === "user";
+
+      // Separator
       doc
-        .fontSize(12)
-        .fillColor(message.role === "user" ? "blue" : "black")
-        .text(
-          `${message.role.toUpperCase()}: ${message.content}`,
-          {
-            align: "left",
-          }
-        );
+        .moveTo(50, doc.y)
+        .lineTo(545, doc.y)
+        .strokeColor("#DDDDDD")
+        .stroke();
 
       doc.moveDown();
+
+      // Role
+      doc
+        .fontSize(14)
+        .fillColor(
+          isUser ? "#2563EB" : "#16A34A"
+        )
+        .font("Helvetica-Bold")
+        .text(
+          isUser
+            ? "👤 User"
+            : "🤖 AI Assistant"
+        );
+
+      doc.moveDown(0.4);
+
+      // Message
+      doc
+        .font("Helvetica")
+        .fontSize(12)
+        .fillColor("black")
+        .text(message.content, {
+          align: "left",
+          lineGap: 4,
+        });
+
+      doc.moveDown(1.2);
     });
+
+    // ==========================================
+    // Footer
+    // ==========================================
+
+    doc.moveDown();
+
+    doc
+      .moveTo(50, doc.y)
+      .lineTo(545, doc.y)
+      .strokeColor("#999999")
+      .stroke();
+
+    doc.moveDown();
+
+    doc
+      .fontSize(11)
+      .fillColor("gray")
+      .text("End of Conversation", {
+        align: "center",
+      });
 
     doc.end();
   });
