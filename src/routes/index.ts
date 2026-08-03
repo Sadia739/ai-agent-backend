@@ -5,6 +5,7 @@ import messageRoutes from "../messages/message.routes.js";
 import aiRoutes from "../ai/ai.routes.js";
 import documentRoutes from "../documents/document.routes.js";
 import toolExecutionRoutes from "../tools/tool-execution.routes.js";
+import exportRoutes from "../export/export.routes.js";
 
 
 const router = Router();
@@ -32,5 +33,8 @@ router.use(
   "/api/tools",
   toolExecutionRoutes
 );
+
+// Export Routes
+router.use("/api/export", exportRoutes);
 
 export default router;
