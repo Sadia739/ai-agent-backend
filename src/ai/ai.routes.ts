@@ -9,6 +9,9 @@ import {
 
 import { webSearch } from "../tools/web-search.tool.js";
 
+import client from "./openai.js";
+import { toolDeclarations } from "./tool-definitions.js";
+
 const router = Router();
 
 // =====================================
@@ -49,6 +52,43 @@ router.get(
       res.status(500).json({
         success: false,
         message:
+          error.response?.data ||
+          error.message,
+      });
+    }
+  }
+);
+
+// =====================================
+// Test Groq Tool Calling
+// =====================================
+
+router.get(
+  "/tool-test",
+  async (req, res) => {
+    try {
+      const response =
+        await client.chat.completions.create({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "user",
+              content:
+                "What are today's AI news?",
+            },
+          ],
+          tools: toolDeclarations,
+          tool_choice: "auto",
+        });
+
+      res.json(response);
+    } catch (error: any) {
+      console.error(error);
+
+      res.status(500).json({
+        success: false,
+        error:
+          error.error ||
           error.response?.data ||
           error.message,
       });
