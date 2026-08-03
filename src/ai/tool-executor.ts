@@ -4,6 +4,12 @@ export const executeTool = async (
   name: string,
   args: Record<string, any>
 ) => {
+  console.log("==================================");
+  console.log("EXECUTE TOOL");
+  console.log("Tool:", name);
+  console.log("Arguments:", args);
+  console.log("==================================");
+
   switch (name) {
     case "calculator":
       return toolFunctions.calculator(
@@ -18,10 +24,10 @@ export const executeTool = async (
         args.city
       );
 
-     case "webSearch":
-    return await toolFunctions.webSearch(
-      args.query
-    );
+    case "webSearch":
+      return await toolFunctions.webSearch(
+        args.query
+      );
 
     default:
       throw new Error(

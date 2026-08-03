@@ -3,9 +3,16 @@ import axios from "axios";
 export const webSearch = async (
   query: string
 ) => {
-  try {
-    console.log("Searching:", query);
+  console.log("==================================");
+  console.log("WEB SEARCH TOOL CALLED");
+  console.log("Query:", query);
+  console.log(
+    "TAVILY_API_KEY exists:",
+    !!process.env.TAVILY_API_KEY
+  );
+  console.log("==================================");
 
+  try {
     const response = await axios.post(
       "https://api.tavily.com/search",
       {
@@ -17,15 +24,29 @@ export const webSearch = async (
       }
     );
 
-    console.log("Tavily Response:", response.data);
+    console.log("===== TAVILY SUCCESS =====");
+    console.log(
+      JSON.stringify(response.data, null, 2)
+    );
 
     return response.data.answer;
   } catch (error: any) {
-    console.error(
-      "Tavily Error:",
-      error.response?.data || error.message
+    console.log("===== TAVILY FAILED =====");
+
+    console.log(
+      error.response?.status
     );
 
-    return "Web search failed.";
+    console.log(
+      JSON.stringify(
+        error.response?.data,
+        null,
+        2
+      )
+    );
+
+    console.log(error.message);
+
+    throw error;
   }
 };
