@@ -61,7 +61,7 @@ export const toolDeclarations: ChatCompletionTool[] = [
     function: {
       name: "webSearch",
       description:
-        "Search the internet for latest news, current events, recent information, and facts that may have changed recently.",
+        "REQUIRED for latest news, current events, recent developments, and any facts that may have changed. Search the internet instead of answering from memory.",
       parameters: {
         type: "object",
         properties: {

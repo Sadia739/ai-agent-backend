@@ -1,6 +1,10 @@
 import client from "./openai.js";
 import { toolDeclarations } from "./tool-definitions.js";
 import { executeTool } from "./tool-executor.js";
+import {
+  getLastUserMessage,
+  shouldUseWebSearch,
+} from "./web-search-detection.js";
 
 import type {
   ChatCompletionMessageParam,
@@ -13,55 +17,86 @@ export interface ExecutedTool {
   toolOutput: string;
 }
 
+const serializeToolResult = (result: unknown): string => {
+  if (result === undefined) {
+    return JSON.stringify({
+      success: false,
+      error: "Tool returned no data.",
+    });
+  }
+  if (typeof result === "string") {
+    return result;
+  }
+  return JSON.stringify(result);
+};
+
 export const generateWithTools = async (
   messages: ChatCompletionMessageParam[]
 ): Promise<{
   reply: string;
   executedTools: ExecutedTool[];
 }> => {
+  const lastUserMessage = getLastUserMessage(messages);
+  const forceWebSearch = shouldUseWebSearch(lastUserMessage);
+
   console.log("========== FIRST AI CALL ==========");
+  console.log("Force web search:", forceWebSearch);
 
-  // First AI call (tool selection)
-  const response =
-    await client.chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      messages,
-      tools: toolDeclarations,
-      tool_choice: "auto",
-    });
+  const response = await client.chat.completions.create({
+    model: "llama-3.1-8b-instant",
+    messages,
+    tools: toolDeclarations,
+    tool_choice: forceWebSearch
+      ? { type: "function", function: { name: "webSearch" } }
+      : "auto",
+  });
 
-  console.log(
-    JSON.stringify(response, null, 2)
-  );
+  console.log(JSON.stringify(response, null, 2));
 
-  const assistant =
-    response.choices[0].message;
+  let assistant = response.choices[0].message;
 
-  // No tool requested
+  // Fallback: model skipped tools for a query that needs web search
+  if (
+    forceWebSearch &&
+    (!assistant.tool_calls || assistant.tool_calls.length === 0)
+  ) {
+    console.log(
+      "========== WEB SEARCH FALLBACK =========="
+    );
+
+    const fallbackResponse =
+      await client.chat.completions.create({
+        model: "llama-3.1-8b-instant",
+        messages,
+        tools: toolDeclarations,
+        tool_choice: {
+          type: "function",
+          function: { name: "webSearch" },
+        },
+      });
+
+    assistant = fallbackResponse.choices[0].message;
+  }
+
   if (
     !assistant.tool_calls ||
     assistant.tool_calls.length === 0
   ) {
     return {
       reply:
-        assistant.content ??
-        "No response generated.",
+        assistant.content ?? "No response generated.",
       executedTools: [],
     };
   }
 
-  // Add assistant tool-call message
   messages.push(assistant);
 
   const executedTools: ExecutedTool[] = [];
 
-  // Execute every tool
   for (const toolCall of assistant.tool_calls) {
     if (toolCall.type !== "function") continue;
 
-    const args = JSON.parse(
-      toolCall.function.arguments
-    );
+    const args = JSON.parse(toolCall.function.arguments);
 
     console.log(
       "Executing:",
@@ -76,46 +111,36 @@ export const generateWithTools = async (
 
     console.log("Tool Result:", result);
 
+    const serialized = serializeToolResult(result);
+
     executedTools.push({
       toolName: toolCall.function.name,
       toolInput: JSON.stringify(args),
-      toolOutput: JSON.stringify(result),
+      toolOutput: serialized,
     });
 
-    const toolMessage: ChatCompletionToolMessageParam =
-      {
-        role: "tool",
-        tool_call_id: toolCall.id,
-        content: JSON.stringify(result),
-      };
+    const toolMessage: ChatCompletionToolMessageParam = {
+      role: "tool",
+      tool_call_id: toolCall.id,
+      content: serialized,
+    };
 
     messages.push(toolMessage);
   }
 
-  console.log(
-    "========== SECOND AI CALL =========="
-  );
+  console.log("========== SECOND AI CALL ==========");
+  console.log(JSON.stringify(messages, null, 2));
 
-  console.log(
-    JSON.stringify(messages, null, 2)
-  );
+  const finalResponse = await client.chat.completions.create({
+    model: "llama-3.1-8b-instant",
+    messages,
+  });
 
-  // IMPORTANT:
-  // Do NOT send tools again.
-  const finalResponse =
-    await client.chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      messages,
-    });
-
-  console.log(
-    JSON.stringify(finalResponse, null, 2)
-  );
+  console.log(JSON.stringify(finalResponse, null, 2));
 
   return {
     reply:
-      finalResponse.choices[0].message
-        .content ??
+      finalResponse.choices[0].message.content ??
       "No response generated.",
     executedTools,
   };
