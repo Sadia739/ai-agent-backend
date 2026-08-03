@@ -23,7 +23,7 @@ export const generateWithTools = async (
 
   // First AI call
   const response = await client.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model: "llama-3.1-8b-instant",
     messages,
     tools: toolDeclarations,
     tool_choice: "auto",
@@ -130,7 +130,7 @@ export const generateWithTools = async (
 
   const finalResponse =
     await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       messages,
       tools: toolDeclarations,
     });

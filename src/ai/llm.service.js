@@ -1,7 +1,7 @@
 import ai from "./openai.js";
 export const generateAIResponse = async (contents) => {
     const response = await ai.chat.completions.create({
-        model: "llama-3.3-70b-versatile", // or the Groq model you're using
+        model: "llama-3.1-8b-instant", // or the Groq model you're using
         messages: contents,
         temperature: 0.7,
     });
