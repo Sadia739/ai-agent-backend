@@ -55,16 +55,15 @@ const formatToolResultForStorage = (
   return serializeToolResult(result);
 };
 
-export const generateWithTools = async (
+export async function* generateWithToolsStream(
   messages: ChatCompletionMessageParam[]
-): Promise<{
-  reply: string;
-  executedTools: ExecutedTool[];
-}> => {
+): AsyncGenerator<
+  string,
+  ExecutedTool[],
+  void
+> {
   const lastUserMessage = getLastUserMessage(messages);
   const forceWebSearch = shouldUseWebSearch(lastUserMessage);
-
-  
 
   const response = await client.chat.completions.create({
     model: "llama-3.1-8b-instant",
@@ -102,11 +101,23 @@ export const generateWithTools = async (
     !assistant.tool_calls ||
     assistant.tool_calls.length === 0
   ) {
-    return {
-      reply:
-        assistant.content ?? "No response generated.",
-      executedTools: [],
-    };
+    const stream =
+      await client.chat.completions.create({
+        model: "llama-3.1-8b-instant",
+        messages,
+        stream: true,
+      });
+
+    for await (const chunk of stream) {
+      const token =
+        chunk.choices[0]?.delta?.content ?? "";
+
+      if (token) {
+        yield token;
+      }
+    }
+
+    return [];
   }
 
   messages.push(assistant);
@@ -118,38 +129,51 @@ export const generateWithTools = async (
 
     const args = JSON.parse(toolCall.function.arguments);
 
-
     const result = await executeTool(
       toolCall.function.name,
       args
     );
 
-    const serialized = serializeToolResult(result);
+    const llmContent = formatToolResultForLLM(
+      toolCall.function.name,
+      result
+    );
+
+    const storageContent = formatToolResultForStorage(
+      toolCall.function.name,
+      result
+    );
 
     executedTools.push({
       toolName: toolCall.function.name,
       toolInput: JSON.stringify(args),
-      toolOutput: serialized,
+      toolOutput: storageContent,
     });
 
     const toolMessage: ChatCompletionToolMessageParam = {
       role: "tool",
       tool_call_id: toolCall.id,
-      content: serialized,
+      content: llmContent,
     };
 
     messages.push(toolMessage);
   }
 
-  const finalResponse = await client.chat.completions.create({
-    model: "llama-3.1-8b-instant",
-    messages,
-  });
+  const stream =
+    await client.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      messages,
+      stream: true,
+    });
 
-  return {
-    reply:
-      finalResponse.choices[0].message.content ??
-      "No response generated.",
-    executedTools,
-  };
-};
+  for await (const chunk of stream) {
+    const token =
+      chunk.choices[0]?.delta?.content ?? "";
+
+    if (token) {
+      yield token;
+    }
+  }
+
+  return executedTools;
+}

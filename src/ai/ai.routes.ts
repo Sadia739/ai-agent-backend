@@ -4,6 +4,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 
 import {
   chat,
+  chatStream,
   chatDocument,
 } from "./ai.controller.js";
 
@@ -22,6 +23,16 @@ router.post(
   "/chat",
   authenticate,
   chat
+);
+
+// =====================================
+// AI Streaming Chat (NEW)
+// =====================================
+
+router.post(
+  "/chat/stream",
+  authenticate,
+  chatStream
 );
 
 router.post(

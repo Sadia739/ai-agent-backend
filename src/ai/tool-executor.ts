@@ -4,11 +4,6 @@ export const executeTool = async (
   name: string,
   args: Record<string, any>
 ) => {
-  console.log("==================================");
-  console.log("EXECUTE TOOL");
-  console.log("Tool:", name);
-  console.log("Arguments:", args);
-  console.log("==================================");
 
   switch (name) {
     case "calculator":
