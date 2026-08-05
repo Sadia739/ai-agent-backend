@@ -66,7 +66,7 @@ export async function* generateWithToolsStream(
   const forceWebSearch = shouldUseWebSearch(lastUserMessage);
 
   const response = await client.chat.completions.create({
-    model: "llama-3.1-8b-instant",
+    model: "llama-3.3-70b-versatile",
     messages,
     tools: toolDeclarations,
     tool_choice: forceWebSearch
@@ -85,7 +85,7 @@ export async function* generateWithToolsStream(
 
     const fallbackResponse =
       await client.chat.completions.create({
-        model: "llama-3.1-8b-instant",
+        model: "llama-3.3-70b-versatile",
         messages,
         tools: toolDeclarations,
         tool_choice: {
@@ -103,7 +103,7 @@ export async function* generateWithToolsStream(
   ) {
     const stream =
       await client.chat.completions.create({
-        model: "llama-3.1-8b-instant",
+        model: "llama-3.3-70b-versatile",
         messages,
         stream: true,
       });
@@ -161,7 +161,7 @@ export async function* generateWithToolsStream(
 
   const stream =
     await client.chat.completions.create({
-      model: "llama-3.1-8b-instant",
+      model: "llama-3.3-70b-versatile",
       messages,
       stream: true,
     });

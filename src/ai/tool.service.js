@@ -4,7 +4,7 @@ import { executeTool } from "./tool-executor.js";
 export const generateWithTools = async (messages) => {
     // First AI call
     const response = await client.chat.completions.create({
-        model: "llama-3.1-8b-instant",
+        model: "llama-3.3-70b-versatile",
         messages,
         tools: toolDeclarations,
         tool_choice: "auto",
@@ -44,7 +44,7 @@ export const generateWithTools = async (messages) => {
     }
     // Second AI call
     const finalResponse = await client.chat.completions.create({
-        model: "llama-3.1-8b-instant",
+        model: "llama-3.3-70b-versatile",
         messages,
     });
     return {
