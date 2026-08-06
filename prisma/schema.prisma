@@ -17,6 +17,8 @@ model User {
 
   conversations Conversation[]
   documents     Document[]
+
+  calendarEvents CalendarEvent[]
 }
 
 model Conversation {
@@ -65,6 +67,23 @@ model DocumentChunk {
 
   documentId Int
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}
+
+model CalendarEvent {
+  id          Int      @id @default(autoincrement())
+
+  title       String
+  description String?
+  location    String?
+
+  startTime   DateTime
+  endTime     DateTime
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ToolExecution {

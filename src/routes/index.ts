@@ -6,6 +6,7 @@ import aiRoutes from "../ai/ai.routes.js";
 import documentRoutes from "../documents/document.routes.js";
 import toolExecutionRoutes from "../tools/tool-execution.routes.js";
 import exportRoutes from "../export/export.routes.js";
+import calendarRoutes from "../calendar/calendar.routes.js";
 
 
 const router = Router();
@@ -36,5 +37,8 @@ router.use(
 
 // Export Routes
 router.use("/api/export", exportRoutes);
+
+// Calendar Routes
+router.use("/api/calendar", calendarRoutes);
 
 export default router;

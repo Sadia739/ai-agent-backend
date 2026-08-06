@@ -4,7 +4,7 @@ export const generateAIResponse = async (
   contents: any[]
 ) => {
   const response = await ai.chat.completions.create({
-    model: "llama-3.3-70b-versatile", // or the Groq model you're using
+    model: "openai/gpt-oss-120b", // or the Groq model you're using
     messages: contents,
     temperature: 0.7,
   });

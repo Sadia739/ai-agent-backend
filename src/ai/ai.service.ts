@@ -78,7 +78,7 @@ export const chatWithAI = async (
 
   // Tool Calling
   const result =
-    await generateWithTools(messages);
+    await generateWithTools(messages, userId);
 
   const reply = result.reply;
 
@@ -169,7 +169,7 @@ export async function* chatWithAIStream(
   let fullResponse = "";
 
   const generator =
-    generateWithToolsStream(messages);
+    generateWithToolsStream(messages, userId);
 
   let executedTools: ExecutedTool[] = [];
 
@@ -244,7 +244,7 @@ export const chatWithDocument = async (
 
   const response =
     await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       messages: [
         {
           role: "system",

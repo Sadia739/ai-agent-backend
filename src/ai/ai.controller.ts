@@ -83,37 +83,43 @@ export const chatStream = async (
   req: AuthRequest,
   res: Response
 ) => {
+  res.setHeader(
+    "Content-Type",
+    "text/plain; charset=utf-8"
+  );
+
+  res.setHeader(
+    "Transfer-Encoding",
+    "chunked"
+  );
+
+  res.setHeader(
+    "Cache-Control",
+    "no-cache, no-transform"
+  );
+
+  res.setHeader(
+    "Connection",
+    "keep-alive"
+  );
+
+  res.flushHeaders?.();
+
   try {
     const stream = chatWithAIStream(
       req.body,
       req.user!.id
     );
 
-    res.setHeader(
-      "Content-Type",
-      "text/plain; charset=utf-8"
-    );
+    let wroteContent = false;
 
-    res.setHeader(
-      "Transfer-Encoding",
-      "chunked"
-    );
-
-    res.setHeader(
-      "Cache-Control",
-      "no-cache, no-transform"
-    );
-
-    res.setHeader(
-      "Connection",
-      "keep-alive"
-    );
-
-    res.flushHeaders?.();
-
-    // Stream tokens
     for await (const token of stream) {
+      wroteContent = true;
       res.write(token);
+    }
+
+    if (!wroteContent) {
+      res.write("No response generated.");
     }
 
     res.end();
@@ -130,6 +136,9 @@ export const chatStream = async (
           "Streaming failed",
       });
     } else {
+      res.write(
+        `\n\nError: ${error?.message ?? "Streaming failed"}`
+      );
       res.end();
     }
   }
