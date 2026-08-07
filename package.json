@@ -38,7 +38,8 @@
     "pdfkit": "^0.19.1",
     "pg": "^8.22.0",
     "pgvector": "^0.3.0",
-    "prisma": "^7.8.0"
+    "prisma": "^7.8.0",
+    "together-ai": "^0.46.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

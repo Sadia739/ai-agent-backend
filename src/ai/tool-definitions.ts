@@ -199,4 +199,31 @@ export const toolDeclarations: ChatCompletionTool[] = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "generateImage",
+      description:
+        "Generate one or more images from a text prompt. Returns base64-encoded PNGs or image URLs.",
+      parameters: {
+        type: "object",
+        properties: {
+          prompt: {
+            type: "string",
+            description: "Text prompt describing the desired image",
+          },
+          size: {
+            type: "string",
+            description: "Optional size: 256x256, 512x512, or 1024x1024",
+          },
+          n: {
+            type: "number",
+            description: "Number of images to generate (default 1)",
+          },
+        },
+        required: ["prompt"],
+        additionalProperties: false,
+      },
+    },
+  },
 ];

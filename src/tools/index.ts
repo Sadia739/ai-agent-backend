@@ -8,12 +8,14 @@ import {
   updateCalendarEventTool,
   deleteCalendarEventTool,
 } from "./calendar.tool.js";
+import { generateImage } from "./image.tool.js";
 
 export const toolFunctions = {
   calculator,
   getCurrentTime,
   getWeather,
   webSearch,
+  generateImage,
   createCalendarEvent: createCalendarEventTool,
   listCalendarEvents: listCalendarEventsTool,
   updateCalendarEvent: updateCalendarEventTool,

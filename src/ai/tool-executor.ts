@@ -68,6 +68,13 @@ export const executeTool = async (
       );
     }
 
+    case "generateImage": {
+      const prompt = args.prompt as string;
+      const size = (args.size as string) || undefined;
+      const n = typeof args.n === "number" ? args.n : 1;
+      return await toolFunctions.generateImage(prompt, size, n);
+    }
+
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
